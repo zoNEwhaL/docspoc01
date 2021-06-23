@@ -1,718 +1,6199 @@
----
-swagger: "2.0"
-info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
-tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
-paths:
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
-    post:
-      tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
-    post:
-      tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
-definitions:
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
-      tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ADMS BFF api",
+    "description": "API documentation for the ADMS BFF.",
+    "version": "default"
+  },
+  "servers": [
+    {
+      "url": "http://australianapprenticeships.idc.hosts.testnetwork/admsapi"
+    }
+  ],
+  "paths": {
+    "/api/claim-application-approvals/aaip": {
+      "get": {
+        "tags": [
+          "AaipClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "claimApplicationId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/aaip/{id}/employer": {
+      "put": {
+        "tags": [
+          "AaipClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsEmployerMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsEmployerMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsEmployerMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsEmployerMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/aaip/{id}/apprentice": {
+      "put": {
+        "tags": [
+          "AaipClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsApprenticeMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsApprenticeMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsApprenticeMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsApprenticeMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/aaip/{id}/anp": {
+      "put": {
+        "tags": [
+          "AaipClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsProviderMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsProviderMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsProviderMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAaipClaimApplicationAsProviderMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/aaip/{id}/submission": {
+      "get": {
+        "tags": [
+          "AaipClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AaipClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/addresses/search": {
+      "get": {
+        "tags": [
+          "Addresses"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AutocompleteAddressModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AutocompleteAddressModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AutocompleteAddressModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AutocompleteAddressModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/addresses/validate-location": {
+      "get": {
+        "tags": [
+          "Addresses"
+        ],
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartialAddressModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartialAddressModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartialAddressModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartialAddressModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{apprenticeId}/guardian": {
+      "get": {
+        "tags": [
+          "ApprenticeGuardian"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ApprenticeGuardian"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ApprenticeGuardian"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeGuardianMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeGuardianModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{apprenticeId}/qualifications/{id}": {
+      "get": {
+        "tags": [
+          "ApprenticeQualifications"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ApprenticeQualifications"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{apprenticeId}/qualifications": {
+      "get": {
+        "tags": [
+          "ApprenticeQualifications"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ApprenticeQualifications"
+        ],
+        "parameters": [
+          {
+            "name": "apprenticeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeQualificationMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeQualificationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices": {
+      "get": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeListModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeListModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeListModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeListModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Apprentices"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/search": {
+      "post": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeSearchMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeSearchMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeSearchMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeSearchMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeSearchResultModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeSearchResultModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeSearchResultModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprenticeSearchResultModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{id}": {
+      "get": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeUpdateMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeUpdateMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeUpdateMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeUpdateMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{id}/deceased": {
+      "put": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{id}/admin-update": {
+      "put": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeAdminUpdateMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeAdminUpdateMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeAdminUpdateMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeAdminUpdateMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/apprentices/{id}/service-australia-apprentice-update": {
+      "put": {
+        "tags": [
+          "Apprentices"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeServiceAustraliaUpdateMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeServiceAustraliaUpdateMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeServiceAustraliaUpdateMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprenticeServiceAustraliaUpdateMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprenticeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/check-security-code": {
+      "post": {
+        "tags": [
+          "ClaimApplicationApprovals"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckSecurityCodeMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckSecurityCodeMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckSecurityCodeMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckSecurityCodeMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckSecurityCodeResponseModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckSecurityCodeResponseModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckSecurityCodeResponseModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckSecurityCodeResponseModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/reset-security-token": {
+      "get": {
+        "tags": [
+          "ClaimApplicationApprovals"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/claim-application-approvals/summary/{claimApplicationId}/{identifier}": {
+      "get": {
+        "tags": [
+          "ClaimApplicationApprovals"
+        ],
+        "parameters": [
+          {
+            "name": "claimApplicationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationSummaryModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationSummaryModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationSummaryModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationSummaryModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-applications": {
+      "get": {
+        "tags": [
+          "ClaimApplicationsAdministration"
+        ],
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClaimApplicationListModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClaimApplicationListModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClaimApplicationListModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClaimApplicationListModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-applications/{id}": {
+      "get": {
+        "tags": [
+          "ClaimApplicationsAdministration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimApplicationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/claim-applications/aaip/{id}": {
+      "get": {
+        "tags": [
+          "ClaimApplicationsAdministration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/AaipClaimApplicationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business-registers/{id}": {
+      "get": {
+        "tags": [
+          "EmployerBusinessRegister"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business-registers/(verify)": {
+      "get": {
+        "tags": [
+          "EmployerBusinessRegister"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyBusinessRegisterModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyBusinessRegisterModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyBusinessRegisterModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyBusinessRegisterModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business-registers": {
+      "post": {
+        "tags": [
+          "EmployerBusinessRegister"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessRegisterMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessRegisterModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/excel-exports/claim-applications": {
+      "get": {
+        "tags": [
+          "ExcelExports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/excel-exports/training-contracts": {
+      "get": {
+        "tags": [
+          "ExcelExports"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api": {
+      "get": {
+        "tags": [
+          "Home"
+        ],
+        "summary": "API Home",
+        "description": "Lists available endpoints, documentation URLs, and build details.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/reference-data/financial-institutions": {
+      "get": {
+        "tags": [
+          "ReferenceData"
+        ],
+        "parameters": [
+          {
+            "name": "BSB",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FinancialInstitutionModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FinancialInstitutionModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FinancialInstitutionModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FinancialInstitutionModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reference-data/ListCodes": {
+      "get": {
+        "tags": [
+          "ReferenceData"
+        ],
+        "parameters": [
+          {
+            "name": "CodeType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartingCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "CurrentCodesOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "ExactLookup",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "MaxRows",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "CurrentDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndDateInclusive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReferenceDataCompleteModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReferenceDataCompleteModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReferenceDataCompleteModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReferenceDataCompleteModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reference-data/qualifications": {
+      "get": {
+        "tags": [
+          "ReferenceData"
+        ],
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "State",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationModelPagedList"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationModelPagedList"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationModelPagedList"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationModelPagedList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/testing-tools/claim-applications/rebuild": {
+      "post": {
+        "tags": [
+          "TestingTools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/testing-tools/claim-applications/clear": {
+      "post": {
+        "tags": [
+          "TestingTools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/testing-tools/claim-applications/seed": {
+      "post": {
+        "tags": [
+          "TestingTools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v1/tfnstats": {
+      "get": {
+        "tags": [
+          "TFNStats"
+        ],
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StatusCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tfnstats": {
+      "get": {
+        "tags": [
+          "TFNStats"
+        ],
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StatusCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TFNStatsModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/training-contracts/{trainingContractId}/proof-of-identity-document": {
+      "get": {
+        "tags": [
+          "TrainingContractProofOfIdentityDocument"
+        ],
+        "parameters": [
+          {
+            "name": "trainingContractId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "TrainingContractProofOfIdentityDocument"
+        ],
+        "parameters": [
+          {
+            "name": "trainingContractId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "TrainingContractProofOfIdentityDocument"
+        ],
+        "parameters": [
+          {
+            "name": "trainingContractId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/training-contracts": {
+      "get": {
+        "tags": [
+          "TrainingContracts"
+        ],
+        "summary": "Gets a page of training contracts",
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "RowsPerPage",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Descending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "IsDefaultSorting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractListModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractListModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractListModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractListModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "TrainingContracts"
+        ],
+        "summary": "Creates a new training contract",
+        "requestBody": {
+          "description": "Details of the training contract",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingContractMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingContractMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingContractMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingContractMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/training-contracts/{id}": {
+      "get": {
+        "tags": [
+          "TrainingContracts"
+        ],
+        "summary": "Gets the specified training contract and associated apprentice profile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the training contract",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "TrainingContracts"
+        ],
+        "summary": "Updates an existing training contract",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the training contract",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Details of the training contract and apprentice profile",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractAggregatedMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractAggregatedMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractAggregatedMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractAggregatedMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/training-contracts/{id}/refresh": {
+      "put": {
+        "tags": [
+          "TrainingContracts"
+        ],
+        "summary": "Refreshes the apprentice and employer names using the current apprentice and employer profiles.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the training contract",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractAggregatedModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/training-contracts/{trainingContractId}/checklist": {
+      "get": {
+        "tags": [
+          "TrainingContractsChecklist"
+        ],
+        "parameters": [
+          {
+            "name": "trainingContractId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractChecklistModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractChecklistModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractChecklistModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractChecklistModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/training-contracts/{trainingContractId}/statuses": {
+      "get": {
+        "tags": [
+          "TrainingContractStatuses"
+        ],
+        "parameters": [
+          {
+            "name": "trainingContractId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractStatusModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractStatusModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractStatusModel"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainingContractStatusModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "TrainingContractStatuses"
+        ],
+        "parameters": [
+          {
+            "name": "trainingContractId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingContractStatusMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractStatusModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractStatusModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractStatusModel"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingContractStatusModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AaipClaimApplicationApprenticeAvailabilityModel": {
+        "type": "object",
+        "properties": {
+          "emailVerified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "correctedEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "isNotAvailable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "evidenceHeldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationApprenticeEmploymentModel": {
+        "type": "object",
+        "properties": {
+          "isStillEmployed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "lastDateOfEmployment": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reasonForNotContinuing": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingPlanSignedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "rtoName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rtoAddress": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationApprenticeSchoolingModel": {
+        "type": "object",
+        "properties": {
+          "attendedPrimarySchool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "year12CompletionDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "year12CompletionEvidenceHeldByNetworkProvider": {
+            "type": "boolean"
+          },
+          "schoolBasedQualificationEvidenceHeldByNetworkProvider": {
+            "type": "boolean"
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hoursEmployedPerWeek": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationBankAccountVerificationModel": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "corrections": {
+            "$ref": "#/components/schemas/BankAccountModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationCoauthoriserVerificationModel": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "corrections": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationDroughtAreaCertificateModel": {
+        "type": "object",
+        "properties": {
+          "held": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "heldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationGeneralDetailsModel": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "corrections": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationHostEmployerModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "contactName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isGroupTrainingOrganisation": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationMatureAgedModel": {
+        "type": "object",
+        "properties": {
+          "isMatureAgedWorker": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "evidenceHeldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "claimFormCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "inPerson": {
+            "type": "boolean"
+          },
+          "apprenticeshipId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stateTrainingAuthorityIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "effectDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "apprentice": {
+            "$ref": "#/components/schemas/ClaimApplicationApprenticeModel"
+          },
+          "employer": {
+            "$ref": "#/components/schemas/ClaimApplicationEmployerModel"
+          },
+          "employment": {
+            "$ref": "#/components/schemas/ClaimApplicationEmploymentModel"
+          },
+          "bankAccount": {
+            "$ref": "#/components/schemas/BankAccountModel"
+          },
+          "networkProvider": {
+            "$ref": "#/components/schemas/ClaimApplicationNetworkProviderModel"
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClaimTypeModel"
+            },
+            "nullable": true
+          },
+          "generalDetails": {
+            "$ref": "#/components/schemas/AaipClaimApplicationGeneralDetailsModel"
+          },
+          "bankAccountVerification": {
+            "$ref": "#/components/schemas/AaipClaimApplicationBankAccountVerificationModel"
+          },
+          "hostEmployer": {
+            "$ref": "#/components/schemas/AaipClaimApplicationHostEmployerModel"
+          },
+          "probationaryPeriod": {
+            "$ref": "#/components/schemas/AaipClaimApplicationProbationaryPeriodModel"
+          },
+          "apprenticeEmployment": {
+            "$ref": "#/components/schemas/AaipClaimApplicationApprenticeEmploymentModel"
+          },
+          "droughtAreaCertificate": {
+            "$ref": "#/components/schemas/AaipClaimApplicationDroughtAreaCertificateModel"
+          },
+          "schoolBased": {
+            "$ref": "#/components/schemas/AaipClaimApplicationSchoolBasedModel"
+          },
+          "matureAged": {
+            "$ref": "#/components/schemas/AaipClaimApplicationMatureAgedModel"
+          },
+          "periodOfEmployment": {
+            "$ref": "#/components/schemas/AaipClaimApplicationPeriodOfEmploymentModel"
+          },
+          "apprenticeAvailability": {
+            "$ref": "#/components/schemas/AaipClaimApplicationApprenticeAvailabilityModel"
+          },
+          "employerDeclaration": {
+            "$ref": "#/components/schemas/ClaimApplicationDeclarationModel"
+          },
+          "coauthoriserVerification": {
+            "$ref": "#/components/schemas/AaipClaimApplicationCoauthoriserVerificationModel"
+          },
+          "apprenticeSchooling": {
+            "$ref": "#/components/schemas/AaipClaimApplicationApprenticeSchoolingModel"
+          },
+          "providerDeclaration": {
+            "$ref": "#/components/schemas/AaipClaimApplicationProviderDeclarationModel"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationPeriodOfEmploymentModel": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationProbationaryPeriodModel": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "completionDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationProviderDeclarationModel": {
+        "type": "object",
+        "properties": {
+          "signatory": {
+            "type": "string",
+            "nullable": true
+          },
+          "signatoryTyimsLogon": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AaipClaimApplicationSchoolBasedModel": {
+        "type": "object",
+        "properties": {
+          "for3Months": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "supportedBySchool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "evidenceHeldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddressModel": {
+        "type": "object",
+        "properties": {
+          "line1": {
+            "type": "string",
+            "nullable": true
+          },
+          "line2": {
+            "type": "string",
+            "nullable": true
+          },
+          "line3": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeAddressMessage": {
+        "type": "object",
+        "properties": {
+          "streetAddress1": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetAddress2": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetAddress3": {
+            "type": "string",
+            "nullable": true
+          },
+          "locality": {
+            "type": "string",
+            "nullable": true
+          },
+          "stateCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "singleLineAddress": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeAddressModel": {
+        "type": "object",
+        "properties": {
+          "streetAddress1": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetAddress2": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetAddress3": {
+            "type": "string",
+            "nullable": true
+          },
+          "locality": {
+            "type": "string",
+            "nullable": true
+          },
+          "stateCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "singleLineAddress": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeAdminUpdateMessage": {
+        "type": "object",
+        "properties": {
+          "deceasedFlag": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeAvailabilityMessage": {
+        "type": "object",
+        "properties": {
+          "emailVerified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "correctedEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "isNotAvailable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "evidenceHeldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeEmploymentMessage": {
+        "type": "object",
+        "properties": {
+          "isStillEmployed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "lastDateOfEmployment": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reasonForNotContinuing": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingPlanSignedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "rtoName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rtoAddress": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeGuardianMessage": {
+        "type": "object",
+        "properties": {
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "homePhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobile": {
+            "type": "string",
+            "nullable": true
+          },
+          "workPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "$ref": "#/components/schemas/ApprenticeAddressMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeGuardianModel": {
+        "type": "object",
+        "properties": {
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "homePhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobile": {
+            "type": "string",
+            "nullable": true
+          },
+          "workPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "$ref": "#/components/schemas/ApprenticeAddressModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeListModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherNames": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredName": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "profileType": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeMessage": {
+        "type": "object",
+        "properties": {
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherNames": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredName": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "emailaddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "profiletype": {
+            "type": "string",
+            "nullable": true
+          },
+          "phonenumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprenticePhoneNumberMessage"
+            },
+            "nullable": true
+          },
+          "residentialaddress": {
+            "$ref": "#/components/schemas/ApprenticeAddressMessage"
+          },
+          "postaladdress": {
+            "$ref": "#/components/schemas/ApprenticeAddressMessage"
+          },
+          "indigenousstatuscode": {
+            "type": "string",
+            "nullable": true
+          },
+          "selfassesseddisabilitycode": {
+            "type": "string",
+            "nullable": true
+          },
+          "citizenshipcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "gendercode": {
+            "type": "string",
+            "nullable": true
+          },
+          "interpretorrequiredflag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "countryofbirthcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "languagecode": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredcontacttype": {
+            "type": "string",
+            "nullable": true
+          },
+          "highestschoollevelcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "leftSchoolDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "visanumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "usi": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherNames": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredName": {
+            "type": "string",
+            "nullable": true
+          },
+          "genderCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "selfAssessedDisabilityCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "indigenousStatusCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "interpretorRequiredFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "citizenshipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "leftSchoolDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "profileType": {
+            "type": "string",
+            "nullable": true
+          },
+          "deceasedFlag": {
+            "type": "boolean"
+          },
+          "activeFlag": {
+            "type": "boolean"
+          },
+          "countryOfBirthCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "languageCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "highestSchoolLevelCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "visaNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "crnViewFlag": {
+            "type": "boolean"
+          },
+          "usi": {
+            "type": "string",
+            "nullable": true
+          },
+          "usiVerificationResult": {
+            "$ref": "#/components/schemas/ApprenticeUSIModel"
+          },
+          "phoneNumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprenticePhoneNumberModel"
+            },
+            "nullable": true
+          },
+          "residentialAddress": {
+            "$ref": "#/components/schemas/ApprenticeAddressModel"
+          },
+          "postalAddress": {
+            "$ref": "#/components/schemas/ApprenticeAddressModel"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticePhoneNumberMessage": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredPhoneFlag": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticePhoneNumberModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phoneTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredPhoneFlag": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeQualificationMessage": {
+        "type": "object",
+        "properties": {
+          "qualificationCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationANZSCOCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeQualificationModel": {
+        "type": "object",
+        "properties": {
+          "qualificationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "qualificationCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationANZSCOCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeSchoolingMessage": {
+        "type": "object",
+        "properties": {
+          "attendedPrimarySchool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "year12CompletionDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "year12CompletionEvidenceHeldByNetworkProvider": {
+            "type": "boolean"
+          },
+          "schoolBasedQualificationEvidenceHeldByNetworkProvider": {
+            "type": "boolean"
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hoursEmployedPerWeek": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeSearchMessage": {
+        "type": "object",
+        "properties": {
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "usi": {
+            "type": "string",
+            "nullable": true
+          },
+          "phonenumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeSearchResultModel": {
+        "type": "object",
+        "properties": {
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "profileTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherNames": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "usi": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "residentialAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "scoreValue": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeServiceAustraliaUpdateMessage": {
+        "type": "object",
+        "properties": {
+          "customerReferenceNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeUpdateMessage": {
+        "type": "object",
+        "properties": {
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherNames": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredName": {
+            "type": "string",
+            "nullable": true
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "emailaddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "profiletype": {
+            "type": "string",
+            "nullable": true
+          },
+          "phonenumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprenticeUpdatePhoneNumberMessage"
+            },
+            "nullable": true
+          },
+          "residentialaddress": {
+            "$ref": "#/components/schemas/ApprenticeAddressMessage"
+          },
+          "postaladdress": {
+            "$ref": "#/components/schemas/ApprenticeAddressMessage"
+          },
+          "indigenousstatuscode": {
+            "type": "string",
+            "nullable": true
+          },
+          "selfassesseddisabilitycode": {
+            "type": "string",
+            "nullable": true
+          },
+          "citizenshipcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "gendercode": {
+            "type": "string",
+            "nullable": true
+          },
+          "interpretorrequiredflag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "countryofbirthcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "languagecode": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredcontacttype": {
+            "type": "string",
+            "nullable": true
+          },
+          "highestschoollevelcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "leftSchoolDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "visanumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "usi": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeUpdatePhoneNumberMessage": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredPhoneFlag": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprenticeUSIModel": {
+        "type": "object",
+        "properties": {
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usi": {
+            "type": "string",
+            "nullable": true
+          },
+          "usiStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstNameMatched": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "surnameMatched": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "dateOfBirthMatched": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "usiVerify": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AssessmentMessage": {
+        "type": "object",
+        "properties": {
+          "claimType": {
+            "type": "string",
+            "nullable": true
+          },
+          "eligible": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "reasonNotEligible": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AutocompleteAddressModel": {
+        "type": "object",
+        "properties": {
+          "confidence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "singleLineAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "locality": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BankAccountModel": {
+        "type": "object",
+        "properties": {
+          "bsb": {
+            "type": "string",
+            "nullable": true
+          },
+          "financialInstitution": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BankAccountVerificationMessage": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "corrections": {
+            "$ref": "#/components/schemas/BankAccountModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BoundaryModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessNameModel": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessRegisterMessage": {
+        "type": "object",
+        "properties": {
+          "businessRegisterType": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "abn": {
+            "type": "string",
+            "nullable": true
+          },
+          "acn": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityName": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessName": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationFromDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "stateCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BusinessRegisterModel": {
+        "type": "object",
+        "properties": {
+          "businessRegisterId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "businessRegisterType": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "abn": {
+            "type": "string",
+            "nullable": true
+          },
+          "acn": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityName": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationFromDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "activeFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "stateCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "batchLogId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "businessnames": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessNameModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CheckSecurityCodeMessage": {
+        "type": "object",
+        "properties": {
+          "claimApplicationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "identifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "securityCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CheckSecurityCodeResponseModel": {
+        "type": "object",
+        "properties": {
+          "claimApplicationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "identifier": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "authoriserParty": {
+            "type": "string",
+            "nullable": true
+          },
+          "approvalStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiryReminderTimeout": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "expiryTimeout": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CheckSecurityResponseTokenModel": {
+        "type": "object",
+        "properties": {
+          "claimApplicationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "identifier": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authoriserParty": {
+            "type": "string",
+            "nullable": true
+          },
+          "approvalStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiryReminderTimeout": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "expiryTimeout": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationApprenticeModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "surname": {
+            "type": "string",
+            "nullable": true
+          },
+          "givenName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobile": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationDeclarationModel": {
+        "type": "object",
+        "properties": {
+          "signatory": {
+            "type": "string",
+            "nullable": true
+          },
+          "position": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationEmployerModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "legalName": {
+            "type": "string",
+            "nullable": true
+          },
+          "tradingName": {
+            "type": "string",
+            "nullable": true
+          },
+          "abn": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "workplaceAddress": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobile": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationEmploymentModel": {
+        "type": "object",
+        "properties": {
+          "qualificationTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expectedCompletionDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationListModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "claimFormCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "effectDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "applicationStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "inPerson": {
+            "type": "boolean"
+          },
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "apprenticeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "employerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "claimFormCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "inPerson": {
+            "type": "boolean"
+          },
+          "apprenticeshipId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stateTrainingAuthorityIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "effectDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "apprentice": {
+            "$ref": "#/components/schemas/ClaimApplicationApprenticeModel"
+          },
+          "employer": {
+            "$ref": "#/components/schemas/ClaimApplicationEmployerModel"
+          },
+          "employment": {
+            "$ref": "#/components/schemas/ClaimApplicationEmploymentModel"
+          },
+          "bankAccount": {
+            "$ref": "#/components/schemas/BankAccountModel"
+          },
+          "networkProvider": {
+            "$ref": "#/components/schemas/ClaimApplicationNetworkProviderModel"
+          },
+          "employerDeclaration": {
+            "$ref": "#/components/schemas/ClaimApplicationDeclarationModel"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationNetworkProviderModel": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "officer": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimApplicationSummaryModel": {
+        "type": "object",
+        "properties": {
+          "networkProvider": {
+            "$ref": "#/components/schemas/ClaimApplicationNetworkProviderModel"
+          },
+          "claimFormCategory": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "employerName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "apprenticeName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "hasSecurityToken": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "party": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "canUpdate": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "checkSecurityToken": {
+            "$ref": "#/components/schemas/CheckSecurityResponseTokenModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClaimTypeModel": {
+        "type": "object",
+        "properties": {
+          "claimType": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "eligible": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "reasonNotEligible": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CoauthoriserVerificationMessage": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "corrections": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContractDetailsMessage": {
+        "type": "object",
+        "properties": {
+          "awardName": {
+            "type": "string",
+            "nullable": true
+          },
+          "attendanceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "qualification": {
+            "type": "string",
+            "nullable": true
+          },
+          "apprenticeshipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationAnzsco": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingLengthMonths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "probationPeriod": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "trainingOrganisationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "trainingOrganisationContactOfficerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingOrganisationContactOfficerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "signedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ContractDetailsModel": {
+        "type": "object",
+        "properties": {
+          "awardName": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingHours": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "attendanceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualification": {
+            "type": "string",
+            "nullable": true
+          },
+          "apprenticeshipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationAnzsco": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingLengthMonths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "probationPeriod": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "commencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "signedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "trainingOrganisationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "trainingOrganisationContactOfficerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "trainingOrganisationContactOfficerPhone": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateTrainingContractMessage": {
+        "type": "object",
+        "properties": {
+          "stateTrainingAuthority": {
+            "type": "string",
+            "nullable": true
+          },
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticeshipId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticePlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "employerPlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "contractDetails": {
+            "$ref": "#/components/schemas/ContractDetailsMessage"
+          },
+          "stateDetails": {
+            "$ref": "#/components/schemas/StateDetailsMessage"
+          },
+          "networkProvider": {
+            "$ref": "#/components/schemas/NetworkProviderMessage"
+          },
+          "proofOfIdentity": {
+            "$ref": "#/components/schemas/ProofOfIdentityMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeclarationMessage": {
+        "type": "object",
+        "properties": {
+          "signatory": {
+            "type": "string",
+            "nullable": true
+          },
+          "position": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DocumentModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mimeType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DroughtAreaCertificateMessage": {
+        "type": "object",
+        "properties": {
+          "held": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "heldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FinancialInstitutionModel": {
+        "type": "object",
+        "properties": {
+          "bsb": {
+            "type": "string",
+            "nullable": true
+          },
+          "financialInstitution": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GeneralDetailsMessage": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "corrections": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HostEmployerMessage": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressModel"
+          },
+          "contactName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isGroupTrainingOrganisation": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MatureAgedMessage": {
+        "type": "object",
+        "properties": {
+          "isMatureAgedWorker": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "evidenceHeldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NetworkProviderMessage": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "contractSiteId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "contactName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldOfficerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldOfficerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldOfficerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NetworkProviderModel": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "contractSiteId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "contactName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldOfficerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldOfficerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldOfficerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PartialAddressModel": {
+        "type": "object",
+        "properties": {
+          "locality": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitute": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "boundaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoundaryModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PeriodOfEmploymentMessage": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProbationaryPeriodMessage": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "completionDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProofOfIdentityMessage": {
+        "type": "object",
+        "properties": {
+          "documentCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "photographicDocumentTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "nonPhotographicDocumentTypeCode1": {
+            "type": "string",
+            "nullable": true
+          },
+          "nonPhotographicDocumentTypeCode2": {
+            "type": "string",
+            "nullable": true
+          },
+          "otherDocumentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "sighted": {
+            "type": "boolean"
+          },
+          "sightedComments": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProofOfIdentityModel": {
+        "type": "object",
+        "properties": {
+          "documentCategory": {
+            "type": "string",
+            "description": "Category of the document.",
+            "nullable": true
+          },
+          "photographicDocumentTypeCode": {
+            "type": "string",
+            "description": "Type of the photographic proof of identification document",
+            "nullable": true
+          },
+          "nonPhotographicDocumentTypeCode1": {
+            "type": "string",
+            "description": "Type of the first non-photographic identification document",
+            "nullable": true
+          },
+          "nonPhotographicDocumentTypeCode2": {
+            "type": "string",
+            "description": "Type of the second non-photographic identification document",
+            "nullable": true
+          },
+          "otherDocumentType": {
+            "type": "string",
+            "description": "Description of the document type (when OTHER has been chosen)",
+            "nullable": true
+          },
+          "sighted": {
+            "type": "boolean",
+            "description": "Whether the proof of identification document(s) have been sighted"
+          },
+          "sightedComments": {
+            "type": "string",
+            "description": "Comments regarding the sighting of the proof of identification document(s)",
+            "nullable": true
+          },
+          "uploadedDocumentId": {
+            "type": "integer",
+            "description": "ID of the uploaded document",
+            "format": "int32",
+            "nullable": true
+          },
+          "uploadedDocumentFilename": {
+            "type": "string",
+            "description": "Filename of the uploaded document",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProviderDeclarationMessage": {
+        "type": "object",
+        "properties": {
+          "signatory": {
+            "type": "string",
+            "nullable": true
+          },
+          "signatoryTyimsLogon": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QualificationModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "qualificationCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QualificationModelPagedList": {
+        "type": "object",
+        "properties": {
+          "sortBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "descending": {
+            "type": "boolean"
+          },
+          "sortingDisabled": {
+            "type": "boolean"
+          },
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "criteriaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rowsPerPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPageCount": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "startRecord": {
+            "type": "integer",
+            "format": "int64",
+            "readOnly": true
+          },
+          "endRecord": {
+            "type": "integer",
+            "format": "int64",
+            "readOnly": true
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QualificationModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReferenceDataCompleteModel": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "shortDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SchoolBasedMessage": {
+        "type": "object",
+        "properties": {
+          "for3Months": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "supportedBySchool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "evidenceHeldByNetworkProvider": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StateDetailsMessage": {
+        "type": "object",
+        "properties": {
+          "southAustraliaOtherEvidence": {
+            "type": "string",
+            "nullable": true
+          },
+          "westernAustraliaProject": {
+            "type": "string",
+            "nullable": true
+          },
+          "westernAustraliaCCID": {
+            "type": "string",
+            "nullable": true
+          },
+          "westernAustraliaSuggestedRTOCampus": {
+            "type": "string",
+            "nullable": true
+          },
+          "stateQualification": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StateDetailsModel": {
+        "type": "object",
+        "properties": {
+          "southAustraliaOtherEvidence": {
+            "type": "string",
+            "nullable": true
+          },
+          "westernAustraliaProject": {
+            "type": "string",
+            "nullable": true
+          },
+          "westernAustraliaCCID": {
+            "type": "string",
+            "nullable": true
+          },
+          "westernAustraliaSuggestedRTOCampus": {
+            "type": "string",
+            "nullable": true
+          },
+          "stateQualification": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TaskPercentageModel": {
+        "type": "object",
+        "properties": {
+          "apprentice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "networkProvider": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contract": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TFNStatsModel": {
+        "type": "object",
+        "properties": {
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "apprenticeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tfnStatusDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tfnCreatedDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tfnVerificationStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "numberOfDaysSinceTheMismatch": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrainingContractAggregatedModel": {
+        "type": "object",
+        "properties": {
+          "trainingContract": {
+            "$ref": "#/components/schemas/TrainingContractModel"
+          },
+          "apprentice": {
+            "$ref": "#/components/schemas/ApprenticeModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrainingContractChecklistModel": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationExceptionModel"
+            },
+            "nullable": true
+          },
+          "progress": {
+            "$ref": "#/components/schemas/TaskPercentageModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrainingContractListModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stateTrainingAuthority": {
+            "type": "string",
+            "nullable": true
+          },
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticeshipId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticePlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "employerPlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationStatusDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contractAwardName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractApprenticeshipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractQualification": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractCommencementDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "networkProviderContractSiteId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "trainingOrganisationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrainingContractModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stateTrainingAuthority": {
+            "type": "string",
+            "nullable": true
+          },
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticeshipId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticePlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "employerPlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationStatusCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationStatusDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "contractDetails": {
+            "$ref": "#/components/schemas/ContractDetailsModel"
+          },
+          "stateDetails": {
+            "$ref": "#/components/schemas/StateDetailsModel"
+          },
+          "networkProvider": {
+            "$ref": "#/components/schemas/NetworkProviderModel"
+          },
+          "proofOfIdentity": {
+            "$ref": "#/components/schemas/ProofOfIdentityModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrainingContractStatusModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "applicationStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateAaipClaimApplicationAsApprenticeMessage": {
+        "type": "object",
+        "properties": {
+          "coauthoriserVerification": {
+            "$ref": "#/components/schemas/CoauthoriserVerificationMessage"
+          },
+          "apprenticeSchooling": {
+            "$ref": "#/components/schemas/ApprenticeSchoolingMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateAaipClaimApplicationAsEmployerMessage": {
+        "type": "object",
+        "properties": {
+          "generalDetails": {
+            "$ref": "#/components/schemas/GeneralDetailsMessage"
+          },
+          "bankAccountVerification": {
+            "$ref": "#/components/schemas/BankAccountVerificationMessage"
+          },
+          "hostEmployer": {
+            "$ref": "#/components/schemas/HostEmployerMessage"
+          },
+          "probationaryPeriod": {
+            "$ref": "#/components/schemas/ProbationaryPeriodMessage"
+          },
+          "apprenticeEmployment": {
+            "$ref": "#/components/schemas/ApprenticeEmploymentMessage"
+          },
+          "droughtAreaCertificate": {
+            "$ref": "#/components/schemas/DroughtAreaCertificateMessage"
+          },
+          "schoolBased": {
+            "$ref": "#/components/schemas/SchoolBasedMessage"
+          },
+          "matureAged": {
+            "$ref": "#/components/schemas/MatureAgedMessage"
+          },
+          "periodOfEmployment": {
+            "$ref": "#/components/schemas/PeriodOfEmploymentMessage"
+          },
+          "apprenticeAvailability": {
+            "$ref": "#/components/schemas/ApprenticeAvailabilityMessage"
+          },
+          "employerDeclaration": {
+            "$ref": "#/components/schemas/DeclarationMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateAaipClaimApplicationAsProviderMessage": {
+        "type": "object",
+        "properties": {
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssessmentMessage"
+            },
+            "nullable": true
+          },
+          "providerDeclaration": {
+            "$ref": "#/components/schemas/ProviderDeclarationMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTrainingContractAggregatedMessage": {
+        "type": "object",
+        "properties": {
+          "trainingContract": {
+            "$ref": "#/components/schemas/UpdateTrainingContractMessage"
+          },
+          "apprentice": {
+            "$ref": "#/components/schemas/ApprenticeUpdateMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTrainingContractMessage": {
+        "type": "object",
+        "properties": {
+          "apprenticeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "employerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticeshipId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "apprenticePlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "employerPlaceholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "contractDetails": {
+            "$ref": "#/components/schemas/ContractDetailsMessage"
+          },
+          "stateDetails": {
+            "$ref": "#/components/schemas/StateDetailsMessage"
+          },
+          "networkProvider": {
+            "$ref": "#/components/schemas/NetworkProviderMessage"
+          },
+          "proofOfIdentity": {
+            "$ref": "#/components/schemas/ProofOfIdentityMessage"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTrainingContractStatusMessage": {
+        "type": "object",
+        "properties": {
+          "applicationStatus": {
+            "type": "string",
+            "description": "The new status for the training contract",
+            "nullable": true
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment to associate with the status change. This is mandatory for some status changes.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationExceptionModel": {
+        "type": "object",
+        "properties": {
+          "validationRuleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "screen": {
+            "type": "string",
+            "nullable": true
+          },
+          "field": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerifyBusinessRegisterModel": {
+        "type": "object",
+        "properties": {
+          "abn": {
+            "type": "string",
+            "nullable": true
+          },
+          "abnStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "abnStatusEffectiveFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "acn": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressPostcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressState": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessName": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "entityName": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityTypeName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "TrainingContracts",
+      "description": "Endpoints for working with training contracts"
+    }
+  ]
+}
